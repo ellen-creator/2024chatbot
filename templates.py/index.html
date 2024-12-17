@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>챗봇 대화</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>챗봇 대화</h1>
+    
+    <form method="POST">
+        <label for="category">카테고리:</label>
+        <select name="category" id="category">
+            <option value="일반">일반</option>
+            <option value="취미">취미</option>
+            <option value="여행">여행</option>
+            <option value="직업">직업</option>
+            <option value="음악">음악</option>
+            <option value="애정">애정</option>
+        </select>
+        
+        <p>질문: {{ question }}</p>
+        
+        <label for="user_input">답변:</label>
+        <input type="text" name="user_input" id="user_input" required>
+        <button type="submit">답변</button>
+    </form>
+
+    <hr>
+    
+    <h2>대화 기록</h2>
+    <ul>
+        {% for response in responses %}
+            <li>[{{ response["카테고리"] }}] 질문: {{ response["질문"] }} - 답변: {{ response["응답"] }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+    
+    <!-- 유튜브 뮤직 링크를 삽입 -->
+    <iframe width="560" height="315" src="https://www.youtube.com/watch?v=_XQct_g9n2I" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+body {
+    background-color: #f0f8ff;
+    background-image: url('/static/images/snowflake.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.chat-container {
+    margin: 50px auto;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 15px;
+    background-color: white;
+    width: 400px;
+}
+
+h1 {
+    color: #ff0000;
+    font-size: 24px;
+}
+
+.chat-window {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+#user-input {
+    width: 75%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#send-button {
+    padding: 10px 15px;
+    background-color: #00c853;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#send-button:hover {
+    background-color: #009624;
+}
+
+#toggle-music {
+    margin-top: 20px;
+    background-color: #ffc107;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#toggle-music:hover {
+    background-color: #ffa000;
+}

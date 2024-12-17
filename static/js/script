@@ -1,0 +1,8 @@
+document.getElementById('toggle-music').addEventListener('click', function() {
+    var audio = document.getElementById('bgm');
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
+});

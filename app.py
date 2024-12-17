@@ -1,0 +1,75 @@
+from flask import Flask, render_template, request, redirect
+import random
+
+app = Flask(__name__)
+
+# 질문 데이터 - 카테고리별 질문 설정
+questions = {
+    "일반": [
+        "안녕하세요! 오늘 저와 함께 2024년의 소회를 해보아요",
+        "당신은 돌이켜보는 것을 좋아하나요, 앞을 향해 나아가는 것을 좋아하나요?",
+        "2023년을 돌아볼때와 2024년을 돌아볼 때 지금, 무엇을 다르다고 느끼고 있나요?",
+        "이번년도의 내가 바뀐 점, 바뀌길 원했지만 잘 바뀌지 않았던 점은 무엇인가요?"
+    ],
+    "취미": [
+        "2024년에 가장 좋아한 취미는 무엇인가요?",
+        "이전의 취미를 대할 때와 달라진 나의 자세, 생각 등이 있다면 무엇인가요?",
+        "새로운 취미를 배우고 싶다면 어떤 걸 배우고 싶나요?",
+        "2025년에 누군가에게 추천해주고 싶은 취미가 있다면 그것은 무엇인가요?"
+    ],
+    "여행": [
+        "여행을 좋아하시나요? 2024년 가장 기억에 남는 여행지는 어디인가요?",
+        "그 여행은 왜 좋았나요?",
+        "2025년 혹은 미래에 가보고 싶은 여행지는 어디인가요?"
+    ],
+    "직업": [
+        "현재 어떤 일을 하고 계세요?",
+        "그 직업은 현재 만족스러운가요?",
+        "명함에 직업이 없다면 나를 어떻게 정의할건가요?",
+        "미래에 어떤 일을 하고 싶으신가요?(직무가 아니어도 좋습니다)",
+        "2024년에 그 일을 위해 무엇을해보셨나요?"
+    ],
+    "음악": [
+        "올해 내가 가장 많이 들은 노래는?",
+        "올해 내가 가장 많이 부른 노래는?",
+        "올해 내가 사랑한 노래 장르는?",
+        "올해 내가 가장 많이 추천한 노래는/앨범은? 이유가 무엇일까요?",
+        "2025년에 기대되는 가수는? 앨범은?"
+    ],
+    "애정": [
+        "2024년에 나는 많이 사랑하고 사랑받았나요?",
+        "사랑과 관심을 더 베풀고 싶은 사람들이 있다면 누구일까요?(떠오른다면 지금 안부메시지를 보내보세요)",
+        "2025년에는 어떤 사랑을 하고 싶나요?"
+    ]
+}
+
+# 대화 기록을 저장하는 리스트
+responses = []
+
+# 질문을 관리하는 함수
+def ask_question(category=None):
+    if category and category in questions:
+        return random.choice(questions[category])
+    return random.choice(questions["일반"])
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        # 사용자가 답변을 입력한 경우
+        category = request.form.get("category", "일반")
+        user_input = request.form.get("user_input", "").strip()
+
+        # 대화 기록에 추가
+        current_question = ask_question(category)
+        responses.append({"카테고리": category, "질문": current_question, "응답": user_input})
+
+        # 새로운 질문을 설정
+        next_question = ask_question(category)
+        return render_template("index.html", question=next_question, responses=responses)
+
+    # GET 요청 시, 처음에 표시할 질문을 설정
+    current_question = ask_question()
+    return render_template("index.html", question=current_question, responses=responses)
+
+if __name__ == "__main__":
+    app.run(debug=True)
