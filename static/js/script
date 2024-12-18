@@ -1,8 +1,18 @@
-document.getElementById('toggle-music').addEventListener('click', function() {
-    var audio = document.getElementById('bgm');
+// Ensure the music starts playing when the page loads
+window.addEventListener('load', function() {
+    var audio = document.querySelector("audio");
+    audio.play();
+});
+
+// Prevent form submission from reloading the page and stop the music
+document.querySelector("#surveyForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent page reload
+
+    // Ensure the music keeps playing by triggering audio play if it stops
+    var audio = document.querySelector("audio");
     if (audio.paused) {
-        audio.play();
-    } else {
-        audio.pause();
+        audio.play(); // Restart music if it stopped
     }
+    
+    // Optionally, you can also add your AJAX code for form submission here if needed.
 });

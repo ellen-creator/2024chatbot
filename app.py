@@ -6,7 +6,6 @@ app = Flask(__name__)
 # 질문 데이터 - 카테고리별 질문 설정
 questions = {
     "일반": [
-        "안녕하세요! 오늘 저와 함께 2024년의 소회를 해보아요",
         "당신은 돌이켜보는 것을 좋아하나요, 앞을 향해 나아가는 것을 좋아하나요?",
         "2023년을 돌아볼때와 2024년을 돌아볼 때 지금, 무엇을 다르다고 느끼고 있나요?",
         "이번년도의 내가 바뀐 점, 바뀌길 원했지만 잘 바뀌지 않았던 점은 무엇인가요?"
@@ -50,26 +49,30 @@ responses = []
 def ask_question(category=None):
     if category and category in questions:
         return random.choice(questions[category])
+    # Fall back to "일반" if no category is selected
     return random.choice(questions["일반"])
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    # Add a random value to the context for cache-busting
+    random_value = random.random()
+
     if request.method == "POST":
         # 사용자가 답변을 입력한 경우
         category = request.form.get("category", "일반")
         user_input = request.form.get("user_input", "").strip()
 
         # 대화 기록에 추가
-        current_question = ask_question(category)
+        current_question = request.form.get("current_question", "")
         responses.append({"카테고리": category, "질문": current_question, "응답": user_input})
 
-        # 새로운 질문을 설정
+        # 새로운 질문 생성
         next_question = ask_question(category)
-        return render_template("index.html", question=next_question, responses=responses)
+        return render_template("index.html", question=next_question, responses=responses, random_value=random_value)
 
     # GET 요청 시, 처음에 표시할 질문을 설정
-    current_question = ask_question()
-    return render_template("index.html", question=current_question, responses=responses)
+    current_question = ask_question()  # No category, defaults to "일반"
+    return render_template("index.html", question=current_question, responses=responses, random_value=random_value)
 
 if __name__ == "__main__":
     app.run(debug=True)
