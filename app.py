@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, jsonify
 import random
 
 app = Flask(__name__)
@@ -45,34 +45,26 @@ questions = {
 # 대화 기록을 저장하는 리스트
 responses = []
 
-# 질문을 관리하는 함수
-def ask_question(category=None):
-    if category and category in questions:
-        return random.choice(questions[category])
-    # Fall back to "일반" if no category is selected
-    return random.choice(questions["일반"])
-
 @app.route("/", methods=["GET", "POST"])
 def home():
-    # Add a random value to the context for cache-busting
     random_value = random.random()
 
     if request.method == "POST":
-        # 사용자가 답변을 입력한 경우
         category = request.form.get("category", "일반")
         user_input = request.form.get("user_input", "").strip()
-
-        # 대화 기록에 추가
         current_question = request.form.get("current_question", "")
+        
         responses.append({"카테고리": category, "질문": current_question, "응답": user_input})
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({"status": "success", "responses": responses})
+        
+        return render_template("index.html", responses=responses, random_value=random_value, current_category=category)
 
-        # 새로운 질문 생성
-        next_question = ask_question(category)
-        return render_template("index.html", question=next_question, responses=responses, random_value=random_value)
+    current_category = request.args.get("category", "일반")
+    initial_question = "안녕하세요! 오늘 저와 함께 2024년의 소회를 해보아요"
+    return render_template("index.html", question=initial_question, responses=responses, random_value=random_value, current_category=current_category)
 
-    # GET 요청 시, 처음에 표시할 질문을 설정
-    current_question = ask_question()  # No category, defaults to "일반"
-    return render_template("index.html", question=current_question, responses=responses, random_value=random_value)
 
 if __name__ == "__main__":
     app.run(debug=True)
