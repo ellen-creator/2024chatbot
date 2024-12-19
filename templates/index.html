@@ -4,23 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>당신의 2024를 돌아보아요</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v={{ random_value }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Function to load CSS with cache busting
+        function loadCSS(filename) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = filename + '?v=' + new Date().getTime();
+            document.head.appendChild(link);
+        }
+        // Load the CSS file
+        loadCSS("{{ url_for('static', filename='css/styles.css') }}");
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
-<body style="background-image: url('{{ url_for('static', filename='images/snowflake.png') }}');">
-    <h1>2024 연말정산</h1>
+<body>
+    <div class="snow"></div>
+    
+    <h1>2024 크리스마스 연말정산</h1>
 
     <form method="POST" id="surveyForm">
-        <label for="category">카테고리:</label>
+        <label for="category">질문 토픽을 골라보세요:</label>
         <select name="category" id="category">
-            <option value="일반" {% if "일반" in question %}selected{% endif %}>일반</option>
-            <option value="취미" {% if "취미" in question %}selected{% endif %}>취미</option>
-            <option value="여행" {% if "여행" in question %}selected{% endif %}>여행</option>
-            <option value="직업" {% if "직업" in question %}selected{% endif %}>직업</option>
-            <option value="음악" {% if "음악" in question %}selected{% endif %}>음악</option>
-            <option value="애정" {% if "애정" in question %}selected{% endif %}>애정</option>
+            <option value="일반" {% if current_category == "일반" %}selected{% endif %}>일반</option>
+            <option value="취미" {% if current_category == "취미" %}selected{% endif %}>취미</option>
+            <option value="여행" {% if current_category == "여행" %}selected{% endif %}>여행</option>
+            <option value="직업" {% if current_category == "직업" %}selected{% endif %}>직업</option>
+            <option value="음악" {% if current_category == "음악" %}selected{% endif %}>음악</option>
+            <option value="애정" {% if current_category == "애정" %}selected{% endif %}>애정</option>
         </select>
 
-       <p>질문: {{ question }}</p>
+        <p id="questionDisplay">질문: {{ question }}</p>
         <input type="hidden" name="current_question" value="{{ question }}">
 
         <label for="user_input">답변:</label>
@@ -39,124 +54,24 @@
 
     <hr>
 
-    <button id="downloadPDFButton">PDF 다운로드</button> <!-- Add this button for PDF download -->
+    <button id="downloadPDFButton">PDF로 저장해보세요</button>
 
-    <audio controls autoplay loop>
+    <button id="playButton" style="font-size: 24px;">🎄 for your mood </button>
+    <audio id="backgroundMusic" loop>
         <source src="{{ url_for('static', filename='music/song.mp3') }}" type="audio/mp3">
-        Your browser does not support the audio element.
     </audio>
+    
+    <div id="completionMessage" style="display: none;">
+        <h2>질문을 모두 소진했어요!</h2>
+        <p>당신의 2025년은 더 행복하기를!</p>
+    </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <ul class="lightrope">
+        <!-- Light rope list items -->
+        <li></li>
+        <!-- Repeat <li></li> as needed -->
+    </ul>
 
-    <!-- jsPDF library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <script>
-        // Snowflakes generation
-        function createSnowflakes() {
-            const snowflakeCount = 30; // Number of snowflakes
-            const snowflakeContainer = document.body; // Snowflakes container
-
-            for (let i = 0; i < snowflakeCount; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.classList.add('snowflake');
-                
-                const img = document.createElement('img');
-                img.src = "{{ url_for('static', filename='images/snowflake.png') }}"; // Ensure your snowflake image is here
-                snowflake.appendChild(img);
-
-                // Randomize the position and animation duration
-                const size = Math.random() * (50 - 20) + 20; // Random size between 20px and 50px
-                snowflake.style.left = Math.random() * window.innerWidth + 'px';
-                snowflake.style.animationDuration = Math.random() * 3 + 2 + 's'; // Random falling speed
-                snowflake.style.animationDelay = Math.random() * 5 + 's'; // Delay to make it look more natural
-                
-                snowflakeContainer.appendChild(snowflake);
-            }
-        }
-
-        createSnowflakes();
-
-        // Show the first question on clicking the start button
-        document.getElementById('startButton').addEventListener('click', function() {
-            document.getElementById('startButton').style.display = 'none'; // Hide the start button
-            document.getElementById('surveyContainer').style.display = 'block'; // Show the survey form
-            
-            // Change the question after the start button click
-            const questions = {
-                '일반': '2024년의 가장 큰 성취는 무엇이었나요?',
-                '취미': '올해 시작한 새로운 취미가 있나요?',
-                '여행': '2024년 가장 기억에 남는 여행지는 어디인가요?',
-                '직업': '2024년 직장에서 가장 큰 도전은 무엇이었나요?',
-                '음악': '올해 가장 좋아한 음악 장르는 무엇인가요?',
-                '애정': '2024년의 가장 큰 사랑은 무엇이었나요?'
-            };
-
-            const category = document.getElementById('category').value;
-            const randomQuestion = questions[category];  // Get a random question based on selected category
-
-            // Set the random question to the page
-            document.querySelector('p').textContent = '질문: ' + randomQuestion;
-        });
-
-        // Handle form submission without reloading the page
-        document.getElementById('surveyForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent page reload on form submit
-
-            const userInput = document.getElementById('user_input').value; // Get the user's input
-            const question = document.querySelector('p').textContent.replace('질문: ', ''); // Get the current question
-            
-            // Display the user's answer on the page
-            const responseList = document.getElementById('responseList');
-            const newResponse = document.createElement('li');
-            newResponse.textContent = `[${document.getElementById('category').value}] 질문: ${question} - 답변: ${userInput}`;
-            responseList.appendChild(newResponse);
-            
-            // Clear the user input field for the next answer
-            document.getElementById('user_input').value = '';
-            
-            // Optionally, update the question here for the next round
-            const questions = {
-                '일반': '2024년의 가장 큰 성취는 무엇이었나요?',
-                '취미': '올해 시작한 새로운 취미가 있나요?',
-                '여행': '2024년 가장 기억에 남는 여행지는 어디인가요?',
-                '직업': '2024년 직장에서 가장 큰 도전은 무엇이었나요?',
-                '음악': '올해 가장 좋아한 음악 장르는 무엇인가요?',
-                '애정': '2024년의 가장 큰 사랑은 무엇이었나요?'
-            };
-
-            const category = document.getElementById('category').value;
-            const randomQuestion = questions[category];  // Get a random question based on selected category
-            document.querySelector('p').textContent = '질문: ' + randomQuestion;
-        });
-
-        // PDF download functionality
-        document.getElementById('downloadPDFButton').addEventListener('click', function() {
-            const { jsPDF } = window.jspdf;  // Get jsPDF from the CDN
-
-            // Create a new PDF document
-            const doc = new jsPDF();
-
-            // Set title
-            doc.setFont('Arial', 'bold');
-            doc.text('2024 연말정산 결과', 20, 20);
-
-            // Add survey responses to the PDF
-            const responses = document.getElementById('responseList').getElementsByTagName('li');
-            let yOffset = 30; // Starting y-coordinate for the responses
-            for (let i = 0; i < responses.length; i++) {
-                doc.setFont('Arial', 'normal');
-                doc.text(responses[i].textContent, 20, yOffset);
-                yOffset += 10; // Increase the y-coordinate for the next response
-                if (yOffset > 270) { // If the y-coordinate exceeds the bottom of the page, create a new page
-                    doc.addPage();
-                    yOffset = 20; // Reset y-coordinate for the new page
-                }
-            }
-
-            // Save the PDF
-            doc.save('finishingmy2024.pdf');
-        });
-    </script>
 </body>
 </html>

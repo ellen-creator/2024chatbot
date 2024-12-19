@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # 질문 데이터 - 카테고리별 질문 설정
 questions = {
     "일반": [
-        "당신은 돌이켜보는 것을 좋아하나요, 앞을 향해 나아가는 것을 좋아하나요?",
-        "2023년을 돌아볼때와 2024년을 돌아볼 때 지금, 무엇을 다르다고 느끼고 있나요?",
+        "2024년은 당신에게 어떤 색깔이었나요? 왜 그런가요?",
+        "2023년을 돌아볼때와 2024년을 돌아볼 때 지금, 무엇이 다르다고 느끼고 있나요?",
         "이번년도의 내가 바뀐 점, 바뀌길 원했지만 잘 바뀌지 않았던 점은 무엇인가요?"
     ],
     "취미": [
@@ -45,6 +45,25 @@ questions = {
 # 대화 기록을 저장하는 리스트
 responses = []
 
+# 각 카테고리별 사용된 질문을 추적하는 딕셔너리
+used_questions = {category: set() for category in questions}
+
+def get_next_question(current_category):
+    categories = list(questions.keys())
+    current_index = categories.index(current_category)
+    
+    for i in range(len(categories)):
+        category = categories[(current_index + i) % len(categories)]
+        available_questions = set(questions[category]) - used_questions[category]
+        
+        if available_questions:
+            question = random.choice(list(available_questions))
+            used_questions[category].add(question)
+            return category, question
+    
+    # 모든 질문을 사용했을 경우
+    return "완료", "모든 질문에 답변해주셔서 감사합니다!"
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     random_value = random.random()
@@ -56,15 +75,22 @@ def home():
         
         responses.append({"카테고리": category, "질문": current_question, "응답": user_input})
         
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({"status": "success", "responses": responses})
+        # 새로운 질문 생성
+        next_category, next_question = get_next_question(category)
         
-        return render_template("index.html", responses=responses, random_value=random_value, current_category=category)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                "status": "success", 
+                "responses": responses, 
+                "next_question": next_question,
+                "next_category": next_category
+            })
+        
+        return render_template("index.html", question=next_question, responses=responses, random_value=random_value, current_category=next_category)
 
     current_category = request.args.get("category", "일반")
     initial_question = "안녕하세요! 오늘 저와 함께 2024년의 소회를 해보아요"
     return render_template("index.html", question=initial_question, responses=responses, random_value=random_value, current_category=current_category)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
