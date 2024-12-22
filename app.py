@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response, session
+from flask_session import Session
 import random
 import os
 
 app = Flask(__name__, static_folder='static')
-
+app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure key
+app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server filesystem
+Session(app)
 # 질문 데이터 - 카테고리별 질문 설정
 questions = {
     "일반": [
@@ -69,29 +72,35 @@ def get_next_question(current_category):
 def home():
     random_value = random.random()
 
+    # Initialize session responses if not already set
+    if 'responses' not in session:
+        session['responses'] = []
+
     if request.method == "POST":
         category = request.form.get("category", "일반")
         user_input = request.form.get("user_input", "").strip()
         current_question = request.form.get("current_question", "")
         
-        responses.append({"카테고리": category, "질문": current_question, "응답": user_input})
-        
-        # 새로운 질문 생성
+        # Append to session-specific responses
+        session['responses'].append({"카테고리": category, "질문": current_question, "응답": user_input})
+        session.modified = True  # Mark session as modified
+
+        # Generate the next question
         next_category, next_question = get_next_question(category)
-        
+
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({
                 "status": "success", 
-                "responses": responses, 
+                "responses": session['responses'], 
                 "next_question": next_question,
                 "next_category": next_category
             })
-        
-        return render_template("index.html", question=next_question, responses=responses, random_value=random_value, current_category=next_category)
+
+        return render_template("index.html", question=next_question, responses=session['responses'], random_value=random_value, current_category=next_category)
 
     current_category = request.args.get("category", "일반")
     initial_question = "안녕하세요! 오늘 저와 함께 2024년의 소회를 해보아요"
-    return render_template("index.html", question=initial_question, responses=responses, random_value=random_value, current_category=current_category)
+    return render_template("index.html", question=initial_question, responses=session['responses'], random_value=random_value, current_category=current_category)
 
 if __name__ == "__main__":
     # Use environment variables for host and port
