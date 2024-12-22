@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>당신의 2024를 돌아보아요</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-
-    <script>
-        // Function to load CSS with cache busting
-        function loadCSS(filename) {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = filename + '?v=' + new Date().getTime();
-            document.head.appendChild(link);
-        }
-        // Load the CSS file
-        loadCSS("{{ url_for('static', filename='css/styles.css') }}");
-    </script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>당신의 2024를 돌아보아요</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    
+        <!-- Link to CSS with cache-busting -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v={{ time() }}">
+    
+        <!-- JavaScript for loading additional scripts -->
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </head>
 <body>
     
     
