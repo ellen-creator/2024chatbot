@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import random
+import os
 
 app = Flask(__name__, static_folder='static')
 
@@ -93,4 +94,8 @@ def home():
     return render_template("index.html", question=initial_question, responses=responses, random_value=random_value, current_category=current_category)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Use environment variables for host and port
+    host = os.environ.get('HOST', '0.0.0.0')  # Default to 0.0.0.0
+    port = int(os.environ.get('PORT', 5000))  # Default to 5000
+
+    app.run(host=host, port=port)
