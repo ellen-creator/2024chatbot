@@ -1,5 +1,5 @@
 body {
-    background-image: url('images/santa.png'); /* Path to your image */
+    background-image: url('/images/santa.png'); /* Correct path */
     background-size: cover; /* Cover the entire viewport */
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Prevent repeating */
