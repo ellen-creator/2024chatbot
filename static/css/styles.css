@@ -1,5 +1,8 @@
 body {
-    background-color: #01080c;
+    background-image: url('images/santa.png'); /* Path to your image */
+    background-size: cover; /* Cover the entire viewport */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent repeating */
     font-family: 'Arial', sans-serif;
     color: #ffffff;
     margin: 0;
@@ -7,9 +10,7 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
-    background: #000;
 }
-
 html {
 	height: 100%;
 }
@@ -129,17 +130,17 @@ html {
 }
 
 h1 {
-    color: #fbbf24;
+    font-family: 'Pacifico', cursive; /* Festive font */
+    color: #ffeb3b; /* Gold color */
     text-align: center;
-    font-size: 2.5em;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: 3em;
+    text-shadow: 3px 3px #d32f2f; /* Red shadow for a festive glow */
 }
 
 h2 {
-    color: #f59e0b;
-    text-align: center;
+    font-family: 'Pacifico', cursive;
+    color: #76ff03; /* Bright green */
 }
-
 form {
     background-color: rgba(255, 255, 255, 0.1);
     padding: 20px;
@@ -155,17 +156,18 @@ label, select, input, button {
 }
 
 button {
-    background-color: #dc2626;
+    background-color: #ff5722; /* Festive red */
     color: white;
     padding: 10px;
+    border-radius: 25px; /* Rounded corners */
     border: none;
     cursor: pointer;
     font-size: 1em;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease-in-out;
 }
 
 button:hover {
-    background-color: #b91c1c;
+    background-color: #4caf50; /* Festive green on hover */
 }
 
 #downloadPDFButton {
