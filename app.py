@@ -5,7 +5,7 @@ import os
 from time import time
 
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure key
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the server filesystem
 Session(app)
