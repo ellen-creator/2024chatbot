@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
             playButton.textContent = "🎅"; // Santa, or any other icon you prefer for pause
         }
     });
+    document.getElementById("downloadPDFButton").addEventListener("click", function() {
+        downloadPDF();
+    });
 
     document.querySelector("#surveyForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -80,10 +83,12 @@ function updateResponseList(responses) {
     });
 }
 function downloadPDF() {
-    const pdf = new jsPDF();
-    const responses = document.getElementById('responseList').innerText;
-    pdf.text("Your 2024 Reflections", 10, 10);
-    pdf.text(responses, 10, 20);
-    pdf.save("2024_reflections.pdf");
+    const element = document.getElementById('responseList'); // The element you want to capture
+    html2canvas(element).then(canvas => {
+        const pdf = new jsPDF();
+        const imgData = canvas.toDataURL('image/png'); // Capture the element as an image
+        pdf.addImage(imgData, 'PNG', 10, 10, 180, 0); // Add the image to the PDF
+        pdf.save("2024_reflections.pdf"); // Save the PDF file
+    });
 }
 })
