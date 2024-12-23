@@ -79,5 +79,11 @@ function updateResponseList(responses) {
         responseList.appendChild(li);
     });
 }
-
+function downloadPDF() {
+    const pdf = new jsPDF();
+    const responses = document.getElementById('responseList').innerText;
+    pdf.text("Your 2024 Reflections", 10, 10);
+    pdf.text(responses, 10, 20);
+    pdf.save("2024_reflections.pdf");
+}
 })
