@@ -104,8 +104,13 @@ def home():
 
     current_category = request.args.get("category", "일반")
     initial_question = "안녕하세요! 오늘 저와 함께 2024년의 소회를 해보아요"
-    return render_template("index.html", question=initial_question, responses=session['responses'], random_value=random_value, current_category=current_category)
-
+    return render_template("index.html", 
+                           question=initial_question, 
+                           responses=session['responses'], 
+                           random_value=random_value, 
+                           current_category=current_category, 
+                           time=time)
+    
 if __name__ == "__main__":
     # Use environment variables for host and port
     host = os.environ.get('HOST', '0.0.0.0')  # Default to 0.0.0.0
