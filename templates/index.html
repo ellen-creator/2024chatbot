@@ -9,7 +9,7 @@
     
         <!-- Link to CSS with cache-busting -->
         <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v={{ time() }}">
-    
+
         <!-- JavaScript for loading additional scripts -->
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </head>
