@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify, make_response, sessi
 from flask_session import Session
 import random
 import os
+from time import time
+
 
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure key
