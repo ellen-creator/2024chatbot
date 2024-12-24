@@ -93,8 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to download PDF
-    function downloadPDF() {
-        const element = document.getElementById('responseList');
+    async function downloadPDF() {
+        const element = document.getElementsByTagName(`body`)[0]
         if (!element) {
             console.error("Element with id 'responseList' not found!");
             return;
@@ -108,29 +108,29 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         // Create the PDF
-        html2canvas(element, options, function(canvas) {
-            const { jsPDF } = window.jspdf;
-            if (!jsPDF) {
-                console.error("jsPDF not found! Make sure the library is loaded properly.");
-                return;
-            }
+        const canvas = await html2canvas(element, options);
+        const { jsPDF } = window.jspdf;
+        if (!jsPDF) {
+            console.error("jsPDF not found! Make sure the library is loaded properly.");
+            return;
+        }
 
-            try {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
-                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-                const imgX = (pdfWidth - imgWidth * ratio) / 2;
-                const imgY = 30;
+        try {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const imgX = (pdfWidth - imgWidth * ratio) / 2;
+            const imgY = 30;
 
-                pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-                pdf.save('2024_reflections.pdf');
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-            }
-        });
+            pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+            pdf.save('2024_reflections.pdf');
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        }
     }
+
 });
